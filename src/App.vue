@@ -28,12 +28,30 @@
     </div>
 
     <button v-on:click="addProduct">Adauga produsul in lista</button>
-
-    <div v-for="product in produse" :key="product">
-      <h2 v-bind:class="!isAvailable ? 'productAvailable' : 'productNotAvailable'">{{ "Name of product: " + product.name + " category: " +
-      product.category + " price: " + product.price + " is available? " + product.isAvailable}}</h2>
-    </div>
   </form>
+
+   <template v-bind:class="isShown ? 'products-list' : 'displayNone'">
+    <div v-for="product in produse" :key="product" class="list">
+      <h2 v-bind:class="product.isAvailable ? 'productAvailable' : 'productNotAvailable'">{{ "Name of product: " + product.name + " category: " +
+      product.category + " price: " + product.price + " is available? " + product.isAvailable}}</h2>
+      <button @click="deleteProduct()">Delete product</button>
+    </div>
+   </template>
+    
+   <div class="categories-list">
+    <h2>Lista categorii</h2>
+    <select v-model="selectedCategory">
+      <option value="electronice">Electronice</option>
+      <option value="haine">Haine</option>
+      <option value="mancare">Mancare</option>
+      <option value="jucarii">Jucarii</option>
+    </select>
+    
+    <div class="products" v-for="product in produse" :key="product"> 
+      <h3 v-if="product.category === selectedCategory">{{ product.name }}</h3>
+    </div>
+   </div>
+ 
 </template>
 
 <script>
@@ -49,11 +67,15 @@ export default {
         price: 0,
         isAvailable: false,
       },
+      isShown:false,
+      selectedCategory:'',
     }
   },
   methods: {
     addProduct(event) {
       event.preventDefault();
+      if(this.produs.name !== '' && this.produs.price !== 0)
+    {
       this.produse.push({ ...this.produs })
       this.produs = {
         name: '',
@@ -61,7 +83,17 @@ export default {
         price: 0,
         isAvailable: false,
       };
+      this.isShown=true;
+    }
+    else{
+      alert('The name and the price of the product must be completed!')
+    }
     },
+    deleteProduct(){
+      this.produse.splice(this.produse[this.produse.length-1],1)
+      if(this.produse.length === 0)
+      this.isShown=false
+    }
   },
 }
 
@@ -75,11 +107,13 @@ export default {
   background-position: center;
   height: 100vh;
   display: flex;
+  flex-direction: row;
   justify-content: center;
+  gap:10%;
   align-items: center;
 }
 
-form {
+form, .products-list, .categories-list{
   width: fit-content;
   display: flex;
   flex-direction: column;
@@ -89,26 +123,47 @@ form {
   border-radius: 20px;
   font-family: 'Poppins';
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: floralwhite;
   -webkit-text-stroke-color: black;
   -webkit-text-stroke-width:0.5px;
 }
 
-form div {
+form input[type=checkbox]{
+  width: 5%;
+}
+
+form div { 
   display: flex;
   flex-direction: row;
   gap: 5%;
   padding-top:5% ;
 }
 
+form button{
+  width: 80%;
+  margin-left: 10%;
+  margin-top:8%;
+}
+
 .productAvailable{
 color: green;
+font-size: 1rem;
+
 }
 
 .productNotAvailable{
   color: red;
+  font-size: 1rem;
+}
 
+.displayNone{
+display:none;
+}
+
+.list{
+  display: flex;
+  flex-direction: row;
 }
 
 </style>
