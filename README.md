@@ -1,4 +1,4 @@
-# homework
+# products-management
 
 ## Project setup
 ```
